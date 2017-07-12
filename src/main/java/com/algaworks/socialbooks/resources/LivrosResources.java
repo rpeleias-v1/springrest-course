@@ -1,5 +1,6 @@
 package com.algaworks.socialbooks.resources;
 
+import com.algaworks.socialbooks.domain.Comentario;
 import com.algaworks.socialbooks.domain.Livro;
 import com.algaworks.socialbooks.services.LivrosService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,4 +53,20 @@ public class LivrosResources {
         livrosService.atualizar(livro);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping(value = "/{id}/comentarios")
+    public ResponseEntity<Void> adicionarComentario(@PathVariable("id") Long livroId, @RequestBody Comentario comentario) {
+        livrosService.salvarComentario(livroId, comentario);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+        return ResponseEntity.created(uri).build();
+    }
+
+    @GetMapping(value = "/{id}/comentarios")
+    public ResponseEntity<List<Comentario>> listarComentarios(@PathVariable("id") Long livroId) {
+        List<Comentario> comentarios = livrosService.listarComentarios(livroId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(comentarios);
+    }
+
+
 }

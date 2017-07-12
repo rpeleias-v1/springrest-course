@@ -1,5 +1,6 @@
 package com.algaworks.socialbooks.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.persistence.*;
@@ -17,6 +18,7 @@ public class Livro {
     private String nome;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private Date publicacao;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -25,12 +27,14 @@ public class Livro {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String resumo;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Transient
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @OneToMany(mappedBy = "livro")
     private List<Comentario> comentarios;
 
+    @ManyToOne
+    @JoinColumn(name = "AUTOR_ID")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String autor;
+    private Autor autor;
 
     public Livro(String nome) {
         this.nome = nome;
@@ -87,11 +91,11 @@ public class Livro {
         this.comentarios = comentarios;
     }
 
-    public String getAutor() {
+    public Autor getAutor() {
         return autor;
     }
 
-    public void setAutor(String autor) {
+    public void setAutor(Autor autor) {
         this.autor = autor;
     }
 }
