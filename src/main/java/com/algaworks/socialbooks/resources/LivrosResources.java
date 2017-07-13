@@ -4,13 +4,16 @@ import com.algaworks.socialbooks.domain.Comentario;
 import com.algaworks.socialbooks.domain.Livro;
 import com.algaworks.socialbooks.services.LivrosService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/livros")
@@ -37,7 +40,10 @@ public class LivrosResources {
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
         Livro livro = livrosService.buscar(id);
-        return ResponseEntity.status(HttpStatus.OK).body(livro);
+
+        CacheControl cacheControl = CacheControl.maxAge(20, TimeUnit.SECONDS);
+        
+        return ResponseEntity.status(HttpStatus.OK).cacheControl(cacheControl).body(livro);
     }
 
     @DeleteMapping(value = "/{id}")
@@ -48,14 +54,14 @@ public class LivrosResources {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> atualizar(@RequestBody Livro livro, @PathVariable("id") Long id) {
+    public ResponseEntity<Void> atualizar(@Valid @RequestBody Livro livro, @PathVariable("id") Long id) {
         livro.setId(id);
         livrosService.atualizar(livro);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping(value = "/{id}/comentarios")
-    public ResponseEntity<Void> adicionarComentario(@PathVariable("id") Long livroId, @RequestBody Comentario comentario) {
+    public ResponseEntity<Void> adicionarComentario(@PathVariable("id") Long livroId, @Valid @RequestBody Comentario comentario) {
         livrosService.salvarComentario(livroId, comentario);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
         return ResponseEntity.created(uri).build();

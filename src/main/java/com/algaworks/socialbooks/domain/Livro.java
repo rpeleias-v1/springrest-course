@@ -2,8 +2,11 @@ package com.algaworks.socialbooks.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -15,16 +18,21 @@ public class Livro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message = "O campo nome não pode ser vazio.")
     private String nome;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonFormat(pattern = "dd/MM/yyyy")
+    @NotNull(message = "Campo publicação é de preenchimento obritatório.")
     private Date publicacao;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotNull(message = "Editora é de preenchimento obritatório.")
     private String editora;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotEmpty(message = "O resumo deve ser preenchido.")
+    @Size(max = 1500, message = "O resumo não pode conter mais de 1500 caracteres.")
     private String resumo;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
